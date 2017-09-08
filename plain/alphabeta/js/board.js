@@ -16,12 +16,12 @@ function Board(game, field, player) {
 /**
  * Determines if situation is finished.
  *
- * @param {number} depth
- * @param {number} score
+ * @param {number} profundidade
+ * @param {number} pontuacao
  * @return {boolean}
  */
-Board.prototype.isFinished = function(depth, score) {
-    if (depth == 0 || score == this.game.score || score == -this.game.score || this.isFull()) {
+Board.prototype.isFinished = function(profundidade, pontuacao) {
+    if (profundidade == 0 || pontuacao == this.game.pontuacao || pontuacao == -this.game.pontuacao || this.isFull()) {
         return true;
     }
     return false;
@@ -30,17 +30,17 @@ Board.prototype.isFinished = function(depth, score) {
 /**
  * Place in current board.
  *
- * @param {number} column
+ * @param {number} coluna
  * @return {boolean} 
  */
-Board.prototype.place = function(column) {
-    // Check if column valid
+Board.prototype.place = function(coluna) {
+    // Check if coluna valid
     // 1. not empty 2. not exceeding the board size
-    if (this.field[0][column] == null && column >= 0 && column < this.game.columns) {
+    if (this.field[0][coluna] == null && coluna >= 0 && coluna < this.game.colunas) {
         // Bottom to top
         for (var y = this.game.rows - 1; y >= 0; y--) {
-            if (this.field[y][column] == null) {
-                this.field[y][column] = this.player; // Set current player coin
+            if (this.field[y][coluna] == null) {
+                this.field[y][coluna] = this.player; // Set current player coin
                 break; // Break from loop after inserting
             }
         }
@@ -52,15 +52,15 @@ Board.prototype.place = function(column) {
 }
 
 /**
- * Return a score for various positions (either horizontal, vertical or diagonal by moving through our board).
+ * Return a pontuacao for various positions (either horizontal, vertical or diagonal by moving through our board).
  *
  * @param {number} row
- * @param {number} column
+ * @param {number} coluna
  * @param {number} delta_y
  * @param {number} delta_x
  * @return {number}
  */
-Board.prototype.scorePosition = function(row, column, delta_y, delta_x) {
+Board.prototype.pontuacaoPosition = function(row, coluna, delta_y, delta_x) {
     var human_points = 0;
     var computer_points = 0;
 
@@ -68,30 +68,30 @@ Board.prototype.scorePosition = function(row, column, delta_y, delta_x) {
     this.game.winning_array_human = [];
     this.game.winning_array_cpu = [];
 
-    // Determine score through amount of available chips
+    // Determine pontuacao through amount of available chips
     for (var i = 0; i < 4; i++) {
-        if (this.field[row][column] == 0) {
-            this.game.winning_array_human.push([row, column]);
+        if (this.field[row][coluna] == 0) {
+            this.game.winning_array_human.push([row, coluna]);
             human_points++; // Add for each human chip
-        } else if (this.field[row][column] == 1) {
-            this.game.winning_array_cpu.push([row, column]);
+        } else if (this.field[row][coluna] == 1) {
+            this.game.winning_array_cpu.push([row, coluna]);
             computer_points++; // Add for each computer chip
         }
 
         // Moving through our board
         row += delta_y;
-        column += delta_x;
+        coluna += delta_x;
     }
 
-    // Marking winning/returning score
+    // Marking winning/returning pontuacao
     if (human_points == 4) {
         this.game.winning_array = this.game.winning_array_human;
         // Computer won (100000)
-        return -this.game.score;
+        return -this.game.pontuacao;
     } else if (computer_points == 4) {
         this.game.winning_array = this.game.winning_array_cpu;
         // Human won (-100000)
-        return this.game.score;
+        return this.game.pontuacao;
     } else {
         // Return normal points
         return computer_points;
@@ -99,11 +99,11 @@ Board.prototype.scorePosition = function(row, column, delta_y, delta_x) {
 }
 
 /**
- * Returns the overall score for our board.
+ * Returns the overall pontuacao for our board.
  *
  * @return {number}
  */
-Board.prototype.score = function() {
+Board.prototype.pontuacao = function() {
     var points = 0;
 
     var vertical_points = 0;
@@ -116,7 +116,7 @@ Board.prototype.score = function() {
     // => e.g. height: 0, 1, 2, 3, 4, 5
 
     // Vertical points
-    // Check each column for vertical score
+    // Check each coluna for vertical pontuacao
     // 
     // Possible situations
     //  0  1  2  3  4  5  6
@@ -128,17 +128,17 @@ Board.prototype.score = function() {
     // [ ][ ][x][ ][ ][ ][ ] 5
     for (var row = 0; row < this.game.rows - 3; row++) {
         // Für jede Column überprüfen
-        for (var column = 0; column < this.game.columns; column++) {
+        for (var coluna = 0; coluna < this.game.colunas; coluna++) {
             // Die Column bewerten und zu den Punkten hinzufügen
-            var score = this.scorePosition(row, column, 1, 0);
-            if (score == this.game.score) return this.game.score;
-            if (score == -this.game.score) return -this.game.score;
-            vertical_points += score;
+            var pontuacao = this.pontuacaoPosition(row, coluna, 1, 0);
+            if (pontuacao == this.game.pontuacao) return this.game.pontuacao;
+            if (pontuacao == -this.game.pontuacao) return -this.game.pontuacao;
+            vertical_points += pontuacao;
         }            
     }
 
     // Horizontal points
-    // Check each row's score
+    // Check each row's pontuacao
     // 
     // Possible situations
     //  0  1  2  3  4  5  6
@@ -149,11 +149,11 @@ Board.prototype.score = function() {
     // [ ][ ][ ][ ][ ][ ][ ] 4
     // [ ][ ][ ][ ][ ][ ][ ] 5
     for (var row = 0; row < this.game.rows; row++) {
-        for (var column = 0; column < this.game.columns - 3; column++) { 
-            var score = this.scorePosition(row, column, 0, 1);   
-            if (score == this.game.score) return this.game.score;
-            if (score == -this.game.score) return -this.game.score;
-            horizontal_points += score;
+        for (var coluna = 0; coluna < this.game.colunas - 3; coluna++) { 
+            var pontuacao = this.pontuacaoPosition(row, coluna, 0, 1);   
+            if (pontuacao == this.game.pontuacao) return this.game.pontuacao;
+            if (pontuacao == -this.game.pontuacao) return -this.game.pontuacao;
+            horizontal_points += pontuacao;
         } 
     }
 
@@ -170,11 +170,11 @@ Board.prototype.score = function() {
     // [ ][ ][ ][ ][ ][ ][ ] 4
     // [ ][ ][ ][ ][ ][ ][ ] 5
     for (var row = 0; row < this.game.rows - 3; row++) {
-        for (var column = 0; column < this.game.columns - 3; column++) {
-            var score = this.scorePosition(row, column, 1, 1);
-            if (score == this.game.score) return this.game.score;
-            if (score == -this.game.score) return -this.game.score;
-            diagonal_points1 += score;
+        for (var coluna = 0; coluna < this.game.colunas - 3; coluna++) {
+            var pontuacao = this.pontuacaoPosition(row, coluna, 1, 1);
+            if (pontuacao == this.game.pontuacao) return this.game.pontuacao;
+            if (pontuacao == -this.game.pontuacao) return -this.game.pontuacao;
+            diagonal_points1 += pontuacao;
         }            
     }
 
@@ -189,11 +189,11 @@ Board.prototype.score = function() {
     // [ ][ ][ ][ ][ ][ ][ ] 4
     // [ ][ ][ ][ ][ ][ ][ ] 5
     for (var row = 3; row < this.game.rows; row++) {
-        for (var column = 0; column <= this.game.columns - 4; column++) {
-            var score = this.scorePosition(row, column, -1, +1);
-            if (score == this.game.score) return this.game.score;
-            if (score == -this.game.score) return -this.game.score;
-            diagonal_points2 += score;
+        for (var coluna = 0; coluna <= this.game.colunas - 4; coluna++) {
+            var pontuacao = this.pontuacaoPosition(row, coluna, -1, +1);
+            if (pontuacao == this.game.pontuacao) return this.game.pontuacao;
+            if (pontuacao == -this.game.pontuacao) return -this.game.pontuacao;
+            diagonal_points2 += pontuacao;
         }
 
     }
@@ -208,7 +208,7 @@ Board.prototype.score = function() {
  * @return {boolean}
  */
 Board.prototype.isFull = function() {
-    for (var i = 0; i < this.game.columns; i++) {
+    for (var i = 0; i < this.game.colunas; i++) {
         if (this.field[0][i] == null) {
             return false;
         }

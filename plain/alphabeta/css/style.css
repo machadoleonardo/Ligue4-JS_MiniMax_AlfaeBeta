@@ -26,7 +26,7 @@ h1 {
     overflow: hidden;
 }
 
-#game_board {
+#tabuleiro {
     overflow: hidden;
     border-collapse:collapse;
 }
@@ -37,7 +37,7 @@ h1 {
     height: 55px;
 }
 
-#game_board td {
+#tabuleiro td {
     border: 1px dashed #808080;
     position: relative;
     width: 50px;
@@ -45,7 +45,7 @@ h1 {
     cursor: pointer;
 }
 
-#game_board td:hover::after {
+#tabuleiro td:hover::after {
     background-color: #F4F4F4;
     content: '';
     height: 10000px;
@@ -74,32 +74,32 @@ h1 {
     background-color: transparent !important;
 }
 
-#game_board td {
+#tabuleiro td {
     border-radius: 50%;
 }
 
-#game_board .coin {
+#tabuleiro .coin {
     cursor: default;
 }
 
-#game_board tr {
+#tabuleiro tr {
     width: 100%;
     height: 100%;
 }
 
-#game_board .human-coin,
+#tabuleiro .human-coin,
 .human-coin {
     border-radius: 50%;
     background: #333;
 }
 
-#game_board .cpu-coin,
+#tabuleiro .cpu-coin,
 .cpu-coin {
     border-radius: 50%;
     background: #DC143C;
 }
 
-#game_board .win {
+#tabuleiro .win {
     border-radius: 50%;
     animation: animationFrames 1s infinite;
     -webkit-animation: animationFrames 1s infinite;
@@ -169,7 +169,7 @@ h1 {
     float: left;
 }
 
-#options {
+#opcoes {
     font-size: 13px;
 }
 
@@ -195,7 +195,7 @@ input {
     background: #dadada;
 }
 
-#loading {
+#carregando {
     display: none;
     position: absolute;
     top: 10px;
@@ -263,7 +263,7 @@ select {
     margin-left: 3px !important;
 }
 
-#navigation {
+#navegacao {
     position: absolute;
     top: 0;
     left: 0;
@@ -274,18 +274,18 @@ select {
     border-bottom: 2px solid #DC143C;
 }
 
-#navigation .title {
+#navegacao .title {
     padding: 5px 0px 6px 4px;
 }
 
-#navigation a {
+#navegacao a {
     display: inline-block;
     padding: 5px 0px;
     color: #fff;
     font-size: 11px;
 }
 
-#navigation a:hover {
+#navegacao a:hover {
     text-decoration: none;
 }
 
