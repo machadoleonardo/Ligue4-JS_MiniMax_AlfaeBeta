@@ -4,16 +4,14 @@
  */
 function Game() {
     this.rows = 6; // Height
-    this.columns = 7; // Width
+    this.colunas = 7; // Width
     this.status = 0; // 0: running, 1: won, 2: lost, 3: tie
-    this.depth = 4; // Search depth
-    this.score = 100000, // Win/loss score
+    this.profundidade = 4; // Search profundidade
+    this.pontuacao = 100000, // Win/loss pontuacao
     this.round = 0; // 0: Human, 1: Computer
     this.winning_array = []; // Winning (chips) array
-    this.iterations = 0; // Iteration count
-    
+    this.iteracoes = 0; // Iteration count    
     that = this;
-
     that.init();
 }
 
@@ -22,7 +20,7 @@ Game.prototype.init = function() {
     // Create 2-dimensional array
     var game_board = new Array(that.rows);
     for (var i = 0; i < game_board.length; i++) {
-        game_board[i] = new Array(that.columns);
+        game_board[i] = new Array(that.colunas);
 
         for (var j = 0; j < game_board[i].length; j++) {
             game_board[i][j] = null;
@@ -36,7 +34,7 @@ Game.prototype.init = function() {
     var game_board = "";
     for (var i = 0; i < that.rows; i++) {
         game_board += "<tr>";
-        for (var j = 0; j < that.columns; j++) {
+        for (var j = 0; j < that.colunas; j++) {
             game_board += "<td class='empty'></td>";
         }
         game_board += "</tr>";
@@ -71,7 +69,7 @@ Game.prototype.act = function(e) {
 
 Game.prototype.place = function(column) {
     // If not finished
-    if (that.board.score() != that.score && that.board.score() != -that.score && !that.board.isFull()) {
+    if (that.board.pontuacao() != that.pontuacao && that.board.pontuacao() != -that.pontuacao && !that.board.isFull()) {
         for (var y = that.rows - 1; y >= 0; y--) {
             if (document.getElementById('game_board').rows[y].cells[column].className == 'empty') {
                 if (that.round == 1) {
@@ -93,8 +91,8 @@ Game.prototype.place = function(column) {
 }
 
 Game.prototype.generateComputerDecision = function() {
-    if (that.board.score() != that.score && that.board.score() != -that.score && !that.board.isFull()) {
-        that.iterations = 0; // Reset iteration count
+    if (that.board.pontuacao() != that.pontuacao && that.board.pontuacao() != -that.pontuacao && !that.board.isFull()) {
+        that.iteracoes = 0; // Reset iteration count
         document.getElementById('loading').style.display = "block"; // Loading message
 
         // AI is thinking
@@ -103,7 +101,7 @@ Game.prototype.generateComputerDecision = function() {
             var startzeit = new Date().getTime();
 
             // Algorithm call
-            var ai_move = that.maximizePlay(that.board, that.depth);
+            var ai_move = that.maximizePlay(that.board, that.profundidade);
 
             var laufzeit = new Date().getTime() - startzeit;
             document.getElementById('ai-time').innerHTML = laufzeit.toFixed(2) + 'ms';
@@ -113,8 +111,8 @@ Game.prototype.generateComputerDecision = function() {
 
             // Debug
             document.getElementById('ai-column').innerHTML = 'Column: ' + parseInt(ai_move[0] + 1);
-            document.getElementById('ai-score').innerHTML = 'Score: ' + ai_move[1];
-            document.getElementById('ai-iterations').innerHTML = that.iterations;
+            document.getElementById('ai-pontuacao').innerHTML = 'Score: ' + ai_move[1];
+            document.getElementById('ai-iteracoes').innerHTML = that.iteracoes;
 
             document.getElementById('loading').style.display = "none"; // Remove loading message
         }, 100);
@@ -125,25 +123,25 @@ Game.prototype.generateComputerDecision = function() {
  * Algorithm
  * Minimax principle
  */
-Game.prototype.maximizePlay = function(board, depth) {
-    // Call score of our board
-    var score = board.score();
+Game.prototype.maximizePlay = function(board, profundidade) {
+    // Call pontuacao of our board
+    var pontuacao = board.pontuacao();
 
     // Break
-    if (board.isFinished(depth, score)) return [null, score];
+    if (board.isFinished(profundidade, pontuacao)) return [null, pontuacao];
 
     // Column, Score
     var max = [null, -99999];
 
     // For all possible moves
-    for (var column = 0; column < that.columns; column++) {
+    for (var column = 0; column < that.colunas; column++) {
         var new_board = board.copy(); // Create new board
 
         if (new_board.place(column)) {
 
-            that.iterations++; // Debug
+            that.iteracoes++; // Debug
 
-            var next_move = that.minimizePlay(new_board, depth - 1); // Recursive calling
+            var next_move = that.minimizePlay(new_board, profundidade - 1); // Recursive calling
 
             // Evaluate new move
             if (max[0] == null || next_move[1] > max[1]) {
@@ -156,22 +154,22 @@ Game.prototype.maximizePlay = function(board, depth) {
     return max;
 }
 
-Game.prototype.minimizePlay = function(board, depth) {
-    var score = board.score();
+Game.prototype.minimizePlay = function(board, profundidade) {
+    var pontuacao = board.pontuacao();
 
-    if (board.isFinished(depth, score)) return [null, score];
+    if (board.isFinished(profundidade, pontuacao)) return [null, pontuacao];
 
-    // Column, score
+    // Column, pontuacao
     var min = [null, 99999];
 
-    for (var column = 0; column < that.columns; column++) {
+    for (var column = 0; column < that.colunas; column++) {
         var new_board = board.copy();
 
         if (new_board.place(column)) {
 
-            that.iterations++;
+            that.iteracoes++;
 
-            var next_move = that.maximizePlay(new_board, depth - 1);
+            var next_move = that.maximizePlay(new_board, profundidade - 1);
 
             if (min[0] == null || next_move[1] < min[1]) {
                 min[0] = column;
@@ -194,14 +192,14 @@ Game.prototype.switchRound = function(round) {
 
 Game.prototype.updateStatus = function() {
     // Human won
-    if (that.board.score() == -that.score) {
+    if (that.board.pontuacao() == -that.pontuacao) {
         that.status = 1;
         that.markWin();
         alert("You have won!");
     }
 
     // Computer won
-    if (that.board.score() == that.score) {
+    if (that.board.pontuacao() == that.pontuacao) {
         that.status = 2;
         that.markWin();
         alert("You have lost!");
@@ -241,15 +239,15 @@ Game.prototype.restartGame = function() {
     if (confirm('Game is going to be restarted.\nAre you sure?')) {
         // Dropdown value
         var difficulty = document.getElementById('difficulty');
-        var depth = difficulty.options[difficulty.selectedIndex].value;
-        that.depth = depth;
+        var profundidade = difficulty.options[difficulty.selectedIndex].value;
+        that.profundidade = profundidade;
         that.status = 0;
         that.round = 0;
         that.init();
-        document.getElementById('ai-iterations').innerHTML = "?";
+        document.getElementById('ai-iteracoes').innerHTML = "?";
         document.getElementById('ai-time').innerHTML = "?";
         document.getElementById('ai-column').innerHTML = "Column: ?";
-        document.getElementById('ai-score').innerHTML = "Score: ?";
+        document.getElementById('ai-pontuacao').innerHTML = "Score: ?";
         document.getElementById('game_board').className = "";
         that.updateStatus();
     }
