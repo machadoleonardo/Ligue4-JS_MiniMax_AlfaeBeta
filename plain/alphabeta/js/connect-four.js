@@ -244,7 +244,7 @@ Game.prototype.markWin = function() {
 }
 
 Game.prototype.restartGame = function() {
-    if (confirm('O jogo será reiniciado. \n Você está certo?')) {
+    if (confirm('O jogo será reiniciado?')) {
         // Dropdown value
         var dificuldade = document.getElementById('dificuldade');
         var profundidade = dificuldade.options[dificuldade.selectedIndex].value;
