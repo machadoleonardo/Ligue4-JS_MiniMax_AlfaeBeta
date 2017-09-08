@@ -5,58 +5,58 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="description" content="Artificial Intelligence based on the Minimax- and α-β-Pruning principles.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Connect Four - Alpha-Beta Algorithm</title>
+        <title>Ligue 4 - Alfa-Beta</title>
         <link rel="stylesheet" href="css/style.css">
     </head>
     <body>
-        <div id="navigation">
-            <span class="title">Connect Four JS -</span> <a href="../../">Go to index »</a>
+        <div id="navegacao">
+            <span class="title">Ligue 4 JS -</span> 
         </div>
         
         <div id="container">
-            <h1 class="header-text">Alpha-Beta Algorithm</h1>
+            <h1 class="header-text">Algoritimo Alfa Beta</h1>
             <p class="text subheader-text">
-                Artificial Intelligence based on the Minimax- and α-β-Pruning principles.
+                Inteligência Artificial com base nos princípios Minimax e α-β-Poda.
             </p>
 
             <div class="box-left">
-                <table id="game_board" cellpadding="0"></table> 
-                <div id="loading">AI is thinking...</div>
+                <table id="tabuleiro" cellpadding="0"></table> 
+                <div id="carregando">Calculando Jogada</div>
             </div>
 
             <div class="box-right">
-                <div id="options">
-                    <p class="header">Algorithm</p>
+                <div id="opcoes">
+                    <p class="header">Algoritmo</p>
                     <p>
                         <select id="algorithm-select" onchange="selectAlgorithm(this)" autocomplete="off">
                             <option value="minimax">Minimax</option>
-                            <option value="alphabeta" selected>Alpha-Beta</option>
+                            <option value="alfabeta" selected>Alfa-Beta</option>
                         </select>
                     </p>
-                    <p class="header">Difficulty</p>
+                    <p class="header">Dificuldade</p>
                     <p>
-                        <select id="difficulty" autocomplete="off">
-                            <option value="1">Depth 1</option>
-                            <option value="2">Depth 2 (Passive)</option>
-                            <option value="3">Depth 3</option>
-                            <option value="4" selected="selected">Depth 4 (Easy)</option>
-                            <option value="5">Depth 5</option>
-                            <option value="6">Depth 6 (Moderate)</option>
-                            <option value="7">Depth 7</option>
-                            <option value="8">Depth 8 (Tougher)</option>
+                        <select id="dificuldade" autocomplete="off">
+                            <option value="1">Profundidade 1</option>
+                            <option value="2">Profundidade 2 (Muito Fácil)</option>
+                            <option value="3">Profundidade 3</option>
+                            <option value="4" selected="selected">Profundidade 4 (Fácil)</option>
+                            <option value="5">Profundidade 5</option>
+                            <option value="6">Profundidade 6 (Nível Médio)</option>
+                            <option value="7">Profundidade 7</option>
+                            <option value="8">Profundidade 8 (Difícil)</option>
                         </select>
                     </p>
-                    <p><button class="save" onclick="Game.restartGame();" type="submit">Restart game</button></p>
+                    <p><button class="save" onclick="Game.restartGame();" type="submit">Reiniciar Jogo</button></p>
                 </div>
 
                 <div id="debug">
-                    <p><strong>AI debugging</strong></p>
-                    <p>Generated with <span id="ai-iterations">?</span> iterations</p>
-                    <p>Measured with <span id="ai-time">?</span></p>
-                    <p><span id="ai-column">Column: ?</span></p>
-                    <p><span id="ai-score">Score: ?</span></p>
+                    <p><strong>Depuração da Jogada</strong></p>
+                    <p>Numero de iterações <span id="ai-interacoes">?</span> interações</p>
+                    <p>Tempo <span id="ai-tempo">?</span></p>
+                    <p><span id="ai-coluna">Coluna: ?</span></p>
+                    <p><span id="ai-pontuacao">pontuaçao: ?</span></p>
                     <br/>
-                    <p>Status: <span id="status" class="status-running">running</span></p>
+                    <p>Status: <span id="status" class="status-running">Em andamento</span></p>
                 </div>
             </div>
         </div>
