@@ -4,3 +4,7 @@ plain/alphabeta/css/style\.css~
 *.html~
 
 *.js~
+
+*.css#
+
+*.css~

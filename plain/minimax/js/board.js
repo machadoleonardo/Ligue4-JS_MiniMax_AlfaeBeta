@@ -1,57 +1,57 @@
-function Board(game, field, player) {
-    this.game = game
-    this.field = field;
-    this.player = player;
+function Board(jogo, campo, jogador) {
+    this.jogo = jogo
+    this.campo = campo;
+    this.jogador = jogador;
 }
 
 Board.prototype.isFinished = function(profundidade, pontuacao) {
-    if (profundidade == 0 || pontuacao == this.game.pontuacao || pontuacao == -this.game.pontuacao || this.isFull()) {
+    if (profundidade == 0 || pontuacao == this.jogo.pontuacao || pontuacao == -this.jogo.pontuacao || this.isFull()) {
         return true;
     }
     return false;
 }
 
-Board.prototype.place = function(column) {
+Board.prototype.place = function(coluna) {
 
-    if (this.field[0][column] == null && column >= 0 && column < this.game.colunas) {
-        for (var y = this.game.rows - 1; y >= 0; y--) {
-            if (this.field[y][column] == null) {
-                this.field[y][column] = this.player; 
-                break; 
+    if (this.campo[0][coluna] == null && coluna >= 0 && coluna < this.jogo.colunas) {
+        for (var y = this.jogo.rows - 1; y >= 0; y--) {
+            if (this.campo[y][coluna] == null) {
+                this.campo[y][coluna] = this.jogador;
+                break;
             }
         }
-        this.player = this.game.switchRound(this.player);
+        this.jogador = this.jogo.switchRound(this.jogador);
         return true;
     } else {
         return false;
     }
 }
 
-Board.prototype.pontuacaoPosition = function(row, column, delta_y, delta_x) {
+Board.prototype.pontuacaoPosition = function(row, coluna, delta_y, delta_x) {
     var human_points = 0;
     var computer_points = 0;
 
-    this.game.winning_array_human = [];
-    this.game.winning_array_cpu = [];
+    this.jogo.winning_array_human = [];
+    this.jogo.winning_array_cpu = [];
 
     for (var i = 0; i < 4; i++) {
-        if (this.field[row][column] == 0) {
-            this.game.winning_array_human.push([row, column]);
+        if (this.campo[row][coluna] == 0) {
+            this.jogo.winning_array_human.push([row, coluna]);
             human_points++; // Add for each human chip
-        } else if (this.field[row][column] == 1) {
-            this.game.winning_array_cpu.push([row, column]);
+        } else if (this.campo[row][coluna] == 1) {
+            this.jogo.winning_array_cpu.push([row, coluna]);
             computer_points++; // Add for each computer chip
         }
         row += delta_y;
-        column += delta_x;
+        coluna += delta_x;
     }
 
     if (human_points == 4) {
-        this.game.winning_array = this.game.winning_array_human;
-        return -this.game.pontuacao;
+        this.jogo.winning_array = this.jogo.winning_array_human;
+        return -this.jogo.pontuacao;
     } else if (computer_points == 4) {
-        this.game.winning_array = this.game.winning_array_cpu;
-        return this.game.pontuacao;
+        this.jogo.winning_array = this.jogo.winning_array_cpu;
+        return this.jogo.pontuacao;
     } else {
         return computer_points;
     }
@@ -65,38 +65,38 @@ Board.prototype.pontuacao = function() {
     var diagonal_points1 = 0;
     var diagonal_points2 = 0;
 
-    for (var row = 0; row < this.game.rows - 3; row++) {
-        for (var column = 0; column < this.game.colunas; column++) {
-            var pontuacao = this.pontuacaoPosition(row, column, 1, 0);
-            if (pontuacao == this.game.pontuacao) return this.game.pontuacao;
-            if (pontuacao == -this.game.pontuacao) return -this.game.pontuacao;
+    for (var row = 0; row < this.jogo.rows - 3; row++) {
+        for (var coluna = 0; coluna < this.jogo.colunas; coluna++) {
+            var pontuacao = this.pontuacaoPosition(row, coluna, 1, 0);
+            if (pontuacao == this.jogo.pontuacao) return this.jogo.pontuacao;
+            if (pontuacao == -this.jogo.pontuacao) return -this.jogo.pontuacao;
             vertical_points += pontuacao;
         }            
     }
 
-    for (var row = 0; row < this.game.rows; row++) {
-        for (var column = 0; column < this.game.colunas - 3; column++) { 
-            var pontuacao = this.pontuacaoPosition(row, column, 0, 1);   
-            if (pontuacao == this.game.pontuacao) return this.game.pontuacao;
-            if (pontuacao == -this.game.pontuacao) return -this.game.pontuacao;
+    for (var row = 0; row < this.jogo.rows; row++) {
+        for (var coluna = 0; coluna < this.jogo.colunas - 3; coluna++) { 
+            var pontuacao = this.pontuacaoPosition(row, coluna, 0, 1);   
+            if (pontuacao == this.jogo.pontuacao) return this.jogo.pontuacao;
+            if (pontuacao == -this.jogo.pontuacao) return -this.jogo.pontuacao;
             horizontal_points += pontuacao;
         } 
     }
 
-    for (var row = 0; row < this.game.rows - 3; row++) {
-        for (var column = 0; column < this.game.colunas - 3; column++) {
-            var pontuacao = this.pontuacaoPosition(row, column, 1, 1);
-            if (pontuacao == this.game.pontuacao) return this.game.pontuacao;
-            if (pontuacao == -this.game.pontuacao) return -this.game.pontuacao;
+    for (var row = 0; row < this.jogo.rows - 3; row++) {
+        for (var coluna = 0; coluna < this.jogo.colunas - 3; coluna++) {
+            var pontuacao = this.pontuacaoPosition(row, coluna, 1, 1);
+            if (pontuacao == this.jogo.pontuacao) return this.jogo.pontuacao;
+            if (pontuacao == -this.jogo.pontuacao) return -this.jogo.pontuacao;
             diagonal_points1 += pontuacao;
         }            
     }
 
-    for (var row = 3; row < this.game.rows; row++) {
-        for (var column = 0; column <= this.game.colunas - 4; column++) {
-            var pontuacao = this.pontuacaoPosition(row, column, -1, +1);
-            if (pontuacao == this.game.pontuacao) return this.game.pontuacao;
-            if (pontuacao == -this.game.pontuacao) return -this.game.pontuacao;
+    for (var row = 3; row < this.jogo.rows; row++) {
+        for (var coluna = 0; coluna <= this.jogo.colunas - 4; coluna++) {
+            var pontuacao = this.pontuacaoPosition(row, coluna, -1, +1);
+            if (pontuacao == this.jogo.pontuacao) return this.jogo.pontuacao;
+            if (pontuacao == -this.jogo.pontuacao) return -this.jogo.pontuacao;
             diagonal_points2 += pontuacao;
         }
 
@@ -107,8 +107,8 @@ Board.prototype.pontuacao = function() {
 }
 
 Board.prototype.isFull = function() {
-    for (var i = 0; i < this.game.colunas; i++) {
-        if (this.field[0][i] == null) {
+    for (var i = 0; i < this.jogo.colunas; i++) {
+        if (this.campo[0][i] == null) {
             return false;
         }
     }
@@ -117,8 +117,8 @@ Board.prototype.isFull = function() {
 
 Board.prototype.copy = function() {
     var new_board = new Array();
-    for (var i = 0; i < this.field.length; i++) {
-        new_board.push(this.field[i].slice());
+    for (var i = 0; i < this.campo.length; i++) {
+        new_board.push(this.campo[i].slice());
     }
-    return new Board(this.game, new_board, this.player);
+    return new Board(this.jogo, new_board, this.jogador);
 }

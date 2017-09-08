@@ -1,40 +1,40 @@
-
-function Game() {
-    this.rows = 6; // Height
-    this.colunas = 7; // Width
-    this.status = 0; // 0: running, 1: won, 2: lost, 3: tie
-    this.profundidade = 4; // Search profundidade
-    this.pontuacao = 100000, // Win/loss pontuacao
-    this.round = 0; // 0: Human, 1: Computer
-    this.winning_array = []; // Winning (chips) array
-    this.iteracoes = 0; // Iteration count    
+function Jogo() {
+    this.rows = 6; // Altura
+    this.colunas = 7; // Largura
+    this.status = 0; // 0: em andamento, 1: ganhador, 2: perdedor, 3: empate
+    this.profundidade = 4; // Busca em profundidade
+    this.pontuacao = 100000, // Ganhar/Perder pontuacao
+    this.round = 0; // 0: Humano, 1: Computador
+    this.winning_array = []; // Array de vitorias
+    this.interacoes = 0; // Contador de iterações
+    
     that = this;
     that.init();
 }
 
-Game.prototype.init = function() {
-    var game_board = new Array(that.rows);
-    for (var i = 0; i < game_board.length; i++) {
-        game_board[i] = new Array(that.colunas);
+Jogo.prototype.init = function() {
+    var tabuleiro = new Array(that.rows);
+    for (var i = 0; i < tabuleiro.length; i++) {
+        tabuleiro[i] = new Array(that.colunas);
 
-        for (var j = 0; j < game_board[i].length; j++) {
-            game_board[i][j] = null;
+        for (var j = 0; j < tabuleiro[i].length; j++) {
+            tabuleiro[i][j] = null;
         }
     }
-	this.board = new Board(this, game_board, 0);
+	this.board = new Board(this, tabuleiro, 0);
 
-    var game_board = "";
+    var tabuleiro = "";
     for (var i = 0; i < that.rows; i++) {
-        game_board += "<tr>";
+        tabuleiro += "<tr>";
         for (var j = 0; j < that.colunas; j++) {
-            game_board += "<td class='empty'></td>";
+            tabuleiro += "<td class='empty'></td>";
         }
-        game_board += "</tr>";
+        tabuleiro += "</tr>";
     }
 
-    document.getElementById('game_board').innerHTML = game_board;
+    document.getElementById('tabuleiro').innerHTML = tabuleiro;
 
-    var td = document.getElementById('game_board').getElementsByTagName("td");
+    var td = document.getElementById('tabuleiro').getElementsByTagName("td");
 
     for (var i = 0; i < td.length; i++) {
         if (td[i].addEventListener) {
@@ -45,29 +45,31 @@ Game.prototype.init = function() {
     }
 }
 
-Game.prototype.act = function(e) {
+Jogo.prototype.act = function(e) {
     var element = e.target || window.event.srcElement;
 
+    // Vez jogador Humano
     if (that.round == 0) that.place(element.cellIndex);
     
+    // Vez computador
     if (that.round == 1) that.generateComputerDecision();
 }
 
-Game.prototype.place = function(column) {
+Jogo.prototype.place = function(coluna) {
     if (that.board.pontuacao() != that.pontuacao && that.board.pontuacao() != -that.pontuacao && !that.board.isFull()) {
         for (var y = that.rows - 1; y >= 0; y--) {
-            if (document.getElementById('game_board').rows[y].cells[column].className == 'empty') {
+            if (document.getElementById('tabuleiro').rows[y].cells[coluna].className == 'empty') {
                 if (that.round == 1) {
-                    document.getElementById('game_board').rows[y].cells[column].className = 'coin cpu-coin';
+                    document.getElementById('tabuleiro').rows[y].cells[coluna].className = 'coin cpu-coin';
                 } else {
-                    document.getElementById('game_board').rows[y].cells[column].className = 'coin human-coin';
+                    document.getElementById('tabuleiro').rows[y].cells[coluna].className = 'coin human-coin';
                 }
                 break;
             }
         }
 
-        if (!that.board.place(column)) {
-            return alert("Invalid move!");
+        if (!that.board.place(coluna)) {
+            return alert("Movimento inválido!");
         }
 
         that.round = that.switchRound(that.round);
@@ -75,42 +77,43 @@ Game.prototype.place = function(column) {
     }
 }
 
-Game.prototype.generateComputerDecision = function() {
+Jogo.prototype.generateComputerDecision = function() {
     if (that.board.pontuacao() != that.pontuacao && that.board.pontuacao() != -that.pontuacao && !that.board.isFull()) {
-        that.iteracoes = 0; 
-        document.getElementById('loading').style.display = "block"; // Loading message
+        that.interacoes = 0;
+        document.getElementById('carregando').style.display = "Calculando Jogada";
         setTimeout(function() {
             var startzeit = new Date().getTime();
             var ai_move = that.maximizePlay(that.board, that.profundidade);
             var laufzeit = new Date().getTime() - startzeit;
-            document.getElementById('ai-time').innerHTML = laufzeit.toFixed(2) + 'ms';
+            document.getElementById('ai-tempo').innerHTML = laufzeit.toFixed(2) + 'ms';
             that.place(ai_move[0]);
-            document.getElementById('ai-column').innerHTML = 'Coluna: ' + parseInt(ai_move[0] + 1);
+            document.getElementById('ai-coluna').innerHTML = 'Coluna: ' + parseInt(ai_move[0] + 1);
             document.getElementById('ai-pontuacao').innerHTML = 'Pontuação: ' + ai_move[1];
             document.getElementById('ai-iteracoes').innerHTML = that.iteracoes;
-            document.getElementById('loading').style.display = "none";
+
+            document.getElementById('carregando').style.display = "Nenhum";
         }, 100);
     }
 }
 
-Game.prototype.maximizePlay = function(board, profundidade) {
-    var pontuacao = board.pontuacao();
+Jogo.prototype.maximizePlay = function(board, profundidade) {
+   var pontuacao = board.pontuacao();
 
     if (board.isFinished(profundidade, pontuacao)) return [null, pontuacao];
 
     var max = [null, -99999];
 
-    for (var column = 0; column < that.colunas; column++) {
+    for (var coluna = 0; coluna < that.colunas; coluna++) {
         var new_board = board.copy(); 
 
-        if (new_board.place(column)) {
+        if (new_board.place(coluna)) {
 
             that.iteracoes++; 
 
             var next_move = that.minimizePlay(new_board, profundidade - 1); 
 
             if (max[0] == null || next_move[1] > max[1]) {
-                max[0] = column;
+                max[0] = coluna;
                 max[1] = next_move[1];
             }
         }
@@ -119,24 +122,24 @@ Game.prototype.maximizePlay = function(board, profundidade) {
     return max;
 }
 
-Game.prototype.minimizePlay = function(board, profundidade) {
+Jogo.prototype.minimizePlay = function(board, profundidade) {
     var pontuacao = board.pontuacao();
 
     if (board.isFinished(profundidade, pontuacao)) return [null, pontuacao];
 
     var min = [null, 99999];
 
-    for (var column = 0; column < that.colunas; column++) {
+    for (var coluna = 0; coluna < that.colunas; coluna++) {
         var new_board = board.copy();
 
-        if (new_board.place(column)) {
+        if (new_board.place(coluna)) {
 
             that.iteracoes++;
 
             var next_move = that.maximizePlay(new_board, profundidade - 1);
 
             if (min[0] == null || next_move[1] < min[1]) {
-                min[0] = column;
+                min[0] = coluna;
                 min[1] = next_move[1];
             }
 
@@ -145,7 +148,7 @@ Game.prototype.minimizePlay = function(board, profundidade) {
     return min;
 }
 
-Game.prototype.switchRound = function(round) {
+Jogo.prototype.switchRound = function(round) {
     if (round == 0) {
         return 1;
     } else {
@@ -153,7 +156,7 @@ Game.prototype.switchRound = function(round) {
     }
 }
 
-Game.prototype.updateStatus = function() {
+Jogo.prototype.updateStatus = function() {
     if (that.board.pontuacao() == -that.pontuacao) {
         that.status = 1;
         that.markWin();
@@ -168,52 +171,53 @@ Game.prototype.updateStatus = function() {
 
     if (that.board.isFull()) {
         that.status = 3;
-        alert("Tie!");
+        alert("Empate!");
     }
 
     var html = document.getElementById('status');
     if (that.status == 0) {
         html.className = "status-running";
-        html.innerHTML = "running";
+        html.innerHTML = "Partida em Andamento";
     } else if (that.status == 1) {
         html.className = "status-won";
-        html.innerHTML = "won";
+        html.innerHTML = "Você venceu";
     } else if (that.status == 2) {
         html.className = "status-lost";
-        html.innerHTML = "lost";
+        html.innerHTML = "Você perdeu";
     } else {
         html.className = "status-tie";
-        html.innerHTML = "tie";
+        html.innerHTML = "Empate";
     }
 }
 
-Game.prototype.markWin = function() {
-    document.getElementById('game_board').className = "finished";
+Jogo.prototype.markWin = function() {
+    document.getElementById('tabuleiro').className = "finished";
     for (var i = 0; i < that.winning_array.length; i++) {
-        var name = document.getElementById('game_board').rows[that.winning_array[i][0]].cells[that.winning_array[i][1]].className;
-        document.getElementById('game_board').rows[that.winning_array[i][0]].cells[that.winning_array[i][1]].className = name + " win";
+        var name = document.getElementById('tabuleiro').rows[that.winning_array[i][0]].cells[that.winning_array[i][1]].className;
+        document.getElementById('tabuleiro').rows[that.winning_array[i][0]].cells[that.winning_array[i][1]].className = name + " win";
     }
 }
 
-Game.prototype.restartGame = function() {
-    if (confirm('O jogo será reiniciado.')) {
-        var difficulty = document.getElementById('difficulty');
-        var profundidade = difficulty.options[difficulty.selectedIndex].value;
+Jogo.prototype.restartJogo = function() {
+    if (confirm('O jogo será reiniciado?')) {
+        // Dropdown value
+        var dificuldade = document.getElementById('dificuldade');
+        var profundidade = dificuldade.options[dificuldade.selectedIndex].value;
         that.profundidade = profundidade;
         that.status = 0;
         that.round = 0;
         that.init();
         document.getElementById('ai-iteracoes').innerHTML = "?";
-        document.getElementById('ai-time').innerHTML = "?";
-        document.getElementById('ai-column').innerHTML = "Coluna: ?";
+        document.getElementById('ai-tempo').innerHTML = "?";
+        document.getElementById('ai-coluna').innerHTML = "Coluna: ?";
         document.getElementById('ai-pontuacao').innerHTML = "Pontuação: ?";
-        document.getElementById('game_board').className = "";
+        document.getElementById('tabuleiro').className = "";
         that.updateStatus();
     }
 }
 
 function Start() {
-    window.Game = new Game();
+    window.Jogo = new Jogo();
 }
 
 window.onload = function() {
