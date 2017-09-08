@@ -1,7 +1,4 @@
-/**
- * Minimax Implementation 
- * @plain javascript version
- */
+
 function Game() {
     this.rows = 6; // Height
     this.colunas = 7; // Width
@@ -16,8 +13,6 @@ function Game() {
 }
 
 Game.prototype.init = function() {
-    // Generate 'real' board
-    // Create 2-dimensional array
     var game_board = new Array(that.rows);
     for (var i = 0; i < game_board.length; i++) {
         game_board[i] = new Array(that.colunas);
@@ -26,11 +21,8 @@ Game.prototype.init = function() {
             game_board[i][j] = null;
         }
     }
+	this.board = new Board(this, game_board, 0);
 
-    // Create from board object (see board.js)
-    this.board = new Board(this, game_board, 0);
-
-    // Generate visual board
     var game_board = "";
     for (var i = 0; i < that.rows; i++) {
         game_board += "<tr>";
@@ -42,7 +34,6 @@ Game.prototype.init = function() {
 
     document.getElementById('game_board').innerHTML = game_board;
 
-    // Action listeners
     var td = document.getElementById('game_board').getElementsByTagName("td");
 
     for (var i = 0; i < td.length; i++) {
@@ -54,21 +45,15 @@ Game.prototype.init = function() {
     }
 }
 
-/**
- * On-click event
- */
 Game.prototype.act = function(e) {
     var element = e.target || window.event.srcElement;
 
-    // Human round
     if (that.round == 0) that.place(element.cellIndex);
     
-    // Computer round
     if (that.round == 1) that.generateComputerDecision();
 }
 
 Game.prototype.place = function(column) {
-    // If not finished
     if (that.board.pontuacao() != that.pontuacao && that.board.pontuacao() != -that.pontuacao && !that.board.isFull()) {
         for (var y = that.rows - 1; y >= 0; y--) {
             if (document.getElementById('game_board').rows[y].cells[column].className == 'empty') {
@@ -92,58 +77,38 @@ Game.prototype.place = function(column) {
 
 Game.prototype.generateComputerDecision = function() {
     if (that.board.pontuacao() != that.pontuacao && that.board.pontuacao() != -that.pontuacao && !that.board.isFull()) {
-        that.iteracoes = 0; // Reset iteration count
+        that.iteracoes = 0; 
         document.getElementById('loading').style.display = "block"; // Loading message
-
-        // AI is thinking
         setTimeout(function() {
-            // Debug time
             var startzeit = new Date().getTime();
-
-            // Algorithm call
             var ai_move = that.maximizePlay(that.board, that.profundidade);
-
             var laufzeit = new Date().getTime() - startzeit;
             document.getElementById('ai-time').innerHTML = laufzeit.toFixed(2) + 'ms';
-
-            // Place ai decision
             that.place(ai_move[0]);
-
-            // Debug
-            document.getElementById('ai-column').innerHTML = 'Column: ' + parseInt(ai_move[0] + 1);
-            document.getElementById('ai-pontuacao').innerHTML = 'Score: ' + ai_move[1];
+            document.getElementById('ai-column').innerHTML = 'Coluna: ' + parseInt(ai_move[0] + 1);
+            document.getElementById('ai-pontuacao').innerHTML = 'Pontuação: ' + ai_move[1];
             document.getElementById('ai-iteracoes').innerHTML = that.iteracoes;
-
-            document.getElementById('loading').style.display = "none"; // Remove loading message
+            document.getElementById('loading').style.display = "none";
         }, 100);
     }
 }
 
-/**
- * Algorithm
- * Minimax principle
- */
 Game.prototype.maximizePlay = function(board, profundidade) {
-    // Call pontuacao of our board
     var pontuacao = board.pontuacao();
 
-    // Break
     if (board.isFinished(profundidade, pontuacao)) return [null, pontuacao];
 
-    // Column, Score
     var max = [null, -99999];
 
-    // For all possible moves
     for (var column = 0; column < that.colunas; column++) {
-        var new_board = board.copy(); // Create new board
+        var new_board = board.copy(); 
 
         if (new_board.place(column)) {
 
-            that.iteracoes++; // Debug
+            that.iteracoes++; 
 
-            var next_move = that.minimizePlay(new_board, profundidade - 1); // Recursive calling
+            var next_move = that.minimizePlay(new_board, profundidade - 1); 
 
-            // Evaluate new move
             if (max[0] == null || next_move[1] > max[1]) {
                 max[0] = column;
                 max[1] = next_move[1];
@@ -159,7 +124,6 @@ Game.prototype.minimizePlay = function(board, profundidade) {
 
     if (board.isFinished(profundidade, pontuacao)) return [null, pontuacao];
 
-    // Column, pontuacao
     var min = [null, 99999];
 
     for (var column = 0; column < that.colunas; column++) {
@@ -182,7 +146,6 @@ Game.prototype.minimizePlay = function(board, profundidade) {
 }
 
 Game.prototype.switchRound = function(round) {
-    // 0 Human, 1 Computer
     if (round == 0) {
         return 1;
     } else {
@@ -191,21 +154,18 @@ Game.prototype.switchRound = function(round) {
 }
 
 Game.prototype.updateStatus = function() {
-    // Human won
     if (that.board.pontuacao() == -that.pontuacao) {
         that.status = 1;
         that.markWin();
-        alert("You have won!");
+        alert("Você venceu!");
     }
 
-    // Computer won
     if (that.board.pontuacao() == that.pontuacao) {
         that.status = 2;
         that.markWin();
-        alert("You have lost!");
+        alert("Você perdeu!");
     }
 
-    // Tie
     if (that.board.isFull()) {
         that.status = 3;
         alert("Tie!");
@@ -237,7 +197,6 @@ Game.prototype.markWin = function() {
 
 Game.prototype.restartGame = function() {
     if (confirm('Game is going to be restarted.\nAre you sure?')) {
-        // Dropdown value
         var difficulty = document.getElementById('difficulty');
         var profundidade = difficulty.options[difficulty.selectedIndex].value;
         that.profundidade = profundidade;
@@ -246,16 +205,13 @@ Game.prototype.restartGame = function() {
         that.init();
         document.getElementById('ai-iteracoes').innerHTML = "?";
         document.getElementById('ai-time').innerHTML = "?";
-        document.getElementById('ai-column').innerHTML = "Column: ?";
-        document.getElementById('ai-pontuacao').innerHTML = "Score: ?";
+        document.getElementById('ai-column').innerHTML = "Coluna: ?";
+        document.getElementById('ai-pontuacao').innerHTML = "Pontuação: ?";
         document.getElementById('game_board').className = "";
         that.updateStatus();
     }
 }
 
-/**
- * Start game
- */
 function Start() {
     window.Game = new Game();
 }
