@@ -196,7 +196,7 @@ Game.prototype.markWin = function() {
 }
 
 Game.prototype.restartGame = function() {
-    if (confirm('Game is going to be restarted.\nAre you sure?')) {
+    if (confirm('O jogo será reiniciado.')) {
         var difficulty = document.getElementById('difficulty');
         var profundidade = difficulty.options[difficulty.selectedIndex].value;
         that.profundidade = profundidade;
