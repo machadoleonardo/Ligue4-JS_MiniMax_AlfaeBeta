@@ -6,7 +6,7 @@ function Jogo() {
     this.pontuacao = 100000, // Ganhar/Perder pontuacao
     this.round = 0; // 0: Humano, 1: Computador
     this.winning_array = []; // Array de vitorias
-    this.interacoes = 0; // Contador de iterações
+    this.iteracoes = 0; // Contador de iterações
     
     that = this;
     that.init();
@@ -21,7 +21,7 @@ Jogo.prototype.init = function() {
             tabuleiro[i][j] = null;
         }
     }
-	this.board = new Board(this, tabuleiro, 0);
+    this.board = new Board(this, tabuleiro, 0);
 
     var tabuleiro = "";
     for (var i = 0; i < that.rows; i++) {
@@ -79,13 +79,13 @@ Jogo.prototype.place = function(coluna) {
 
 Jogo.prototype.generateComputerDecision = function() {
     if (that.board.pontuacao() != that.pontuacao && that.board.pontuacao() != -that.pontuacao && !that.board.isFull()) {
-        that.interacoes = 0;
+        that.iteracoes = 0;
         document.getElementById('carregando').style.display = "Calculando Jogada";
         setTimeout(function() {
             var startzeit = new Date().getTime();
             var ai_move = that.maximizePlay(that.board, that.profundidade);
-            var laufzeit = new Date().getTime() - startzeit;
-            document.getElementById('ai-tempo').innerHTML = laufzeit.toFixed(2) + 'ms';
+            var cronometro = new Date().getTime() - startzeit;
+            document.getElementById('ai-tempo').innerHTML = (cronometro/1000).toFixed(3) + 's';
             that.place(ai_move[0]);
             document.getElementById('ai-coluna').innerHTML = 'Coluna: ' + parseInt(ai_move[0] + 1);
             document.getElementById('ai-pontuacao').innerHTML = 'Pontuação: ' + ai_move[1];
