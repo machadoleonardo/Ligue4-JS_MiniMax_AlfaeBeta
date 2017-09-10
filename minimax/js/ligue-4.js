@@ -85,7 +85,7 @@ Jogo.prototype.generateComputerDecision = function() {
             var startzeit = new Date().getTime();
             var ai_move = that.maximizePlay(that.board, that.profundidade);
             var cronometro = new Date().getTime() - startzeit;
-            document.getElementById('ai-tempo').innerHTML = (cronometro/1000).toFixed(3) + 's';
+            document.getElementById('ai-tempo').innerHTML = ((cronometro/1000).toFixed(3)).replace('.',',') + 's';
             that.place(ai_move[0]);
             document.getElementById('ai-coluna').innerHTML = 'Coluna: ' + parseInt(ai_move[0] + 1);
             document.getElementById('ai-pontuacao').innerHTML = 'Pontuação: ' + ai_move[1];
